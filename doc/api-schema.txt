@@ -1,0 +1,96 @@
+COMMENTS
+GET - /comments | getComments() 
+SELECT * FROM comments;
+GET - /comments:deal | getCommentsByDeal() 
+WITH temp_table AS(
+    SELECT deals.deal_id, deals.details, comments.content
+    FROM comments
+    LEFT JOIN deals
+    ON comments.fk_deal= deals.deal_id)
+SELECT *
+FROM temp_table
+WHERE deal_id = $1;
+GET - /comments:user | getCommentsByUser() 
+WITH temp_table AS(
+    SELECT deals.deal_id, fk_user, deals.details, comments.content, comments.created_at
+    FROM comments
+    LEFT JOIN deals
+    ON comments.fk_deal= deals.deal_id)
+SELECT users.name, temp_table.content, temp_table.created_at
+FROM temp_table
+LEFT JOIN users
+    ON temp_table.fk_user = users.user_id;
+GET - /comments:period | getCommentsByPeriod()
+SELECT * FROM comments WHERE (created_at BETWEEN $1 AND $2);
+POST -/comments | createComment()
+INSERT INTO comments (fk_deal, content) VALUES ($1, $2);
+
+DEALS
+GET - /deals | getDeals()
+SELECT * FROM deals;
+GET - /deals:id | getDealsById() 
+SELECT * FROM deals WHERE deal_id = $1;
+GET - /deals:user | getDealByUser() 
+SELECT user_id, name, details, monthly_value, one_off_value
+FROM deals
+LEFT JOIN users
+    ON deals.fk_user = users.user_id;
+GET - deals:customer | getDealByCustomer()
+SELECT customers.name,deals.details, deals.monthly_value, deals.one_off_value
+FROM deals
+LEFT JOIN customers
+    ON deals.fk_customer = customers.customer_id;
+GET - /deals:overview | getDealOverview()
+WITH temp_table AS (
+  SELECT deals.deal_id, users.name, fk_customer  
+  FROM deals
+  LEFT JOIN users
+    ON deals.fk_user = users.user_id)
+SELECT *
+FROM temp_table
+LEFT JOIN customers
+  ON temp_table.fk_customer = customers.customer_id;
+POST - /deals | createDeal()
+INSERT INTO deals ("fk_user", "fk_customer", "details", "monthly_value", "one_off_value", "contract_duration") VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9);
+PUT - /deal:id | updateDeal()
+UPDATE deals SET  status=$1,  "details", "monthly_value", "one_off_value", "contract_duration" WHERE deal_id=$3;
+DELETE -/deal:id | deleteDeal()
+DELETE FROM DEALS WHERE deal_id = $1;
+
+OPERATIONS
+GET - /operations | getOperations()
+SELECT * FROM operations;
+GET - /operations:id | getOperationsById()
+SELECT * FROM operations WHERE operation_id = $1;
+GET - /operations:deal | getOperationsByDeal()
+SELECT * FROM operations
+LEFT JOIN deals
+ON operations.fk_deal = deals.deal_id;
+POST - /operations | createOperation()
+INSERT INTO operations (fk_deal, tasks, completion_status) VALUES ($1, $2, $3);
+PUT - /operations:id | updateOperation()
+UPDATE operations SET tasks = $1, completion_status=$2 WHERE operation_id=$3;
+DELETE - /operations:id | deleteOperation()
+DELETE FROM operations WHERE operation_id=$1;
+
+CUSTOMERS
+GET - /customers | getCustomers()
+SELECT * FROM customers;
+GET - /customer:id | getCustomerById()
+SELECT * FROM customers WHERE operation_id = $1;
+POST - /customers | createCustomer()
+INSERT INTO customers (fk_deal, name) VALUES ($1, $2);
+DELETE - /customers:id |deleteCustomer()
+DELETE FROM customers WHERE customer_id=$1;
+
+USERS
+GET -/users | getUsers()
+SELECT * FROM users;
+GET -/users:id | getUserById()
+SELECT * FROM users WHERE user_id = $1;
+POST -/users | createUser()
+INSERT INTO users (name, mail,admin_credentials) VALUES ($1, $2, $3, $4);
+PUT -/users:id | updateUser()
+UPDATE users SET name=$1, mail=$2, admin_credentials=$3 WHERE user_id=$4;
+DELETE -/users:id | deleteUser()
+DELETE FROM users WHERE user_id=$1;
