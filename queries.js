@@ -102,7 +102,8 @@ const getDeals = (req, res, next) => {
 const getDealsById = (req, res, next) => {
   const deal = req.params.deal;
   pool.query(
-    "SELECT * FROM deals WHERE deal_id = $1", [deal],
+    "WITH temp_table AS (SELECT deal_id, fk_customer, name, monthly_value, one_off_value, details, contract_duration, status, mail, deals.updated_at FROM deals LEFT JOIN users ON deals.fk_user = users.user_id)SELECT temp_table.deal_id, temp_table.fk_customer, customers.name, temp_table.monthly_value, temp_table.one_off_value, temp_table.details, temp_table.contract_duration, temp_table.status, temp_table.mail, temp_table.updated_at FROM temp_table LEFT JOIN customers ON temp_table.fk_customer = customers.customer_id WHERE deal_id=$1;",
+    [deal],
     (error, results) => {
       if (error) {
         throw error;
@@ -141,9 +142,21 @@ const getDealsByCustomer = (req, res, nex) => {
 };
 
 const getDealOverview = (req, res, nex) => {
+  pool.query(
+    "WITH temp_table AS (SELECT deal_id, fk_customer, name, monthly_value, one_off_value, details, contract_duration, status, mail, deals.updated_at FROM deals LEFT JOIN users ON deals.fk_user = users.user_id)SELECT temp_table.deal_id, customers.name, temp_table.monthly_value, temp_table.one_off_value, temp_table.details, temp_table.contract_duration, temp_table.status, temp_table.mail, temp_table.updated_at FROM temp_table LEFT JOIN customers ON temp_table.fk_customer = customers.customer_id ORDER BY monthly_value DESC",
+    (error, results) => {
+      if (error) {
+        throw error;
+      }
+      res.status(200).json(results.rows);
+    }
+  );
+};
+
+const getDealOverviewWithLimit = (req, res, nex) => {
   const limit = req.params.limit;
   pool.query(
-    "WITH temp_table AS (SELECT * FROM deals LEFT JOIN users ON deals.fk_user = users.user_id)SELECT temp_table.deal_id, customers.name, temp_table.monthly_value, temp_table.one_off_value, temp_table.details, temp_table.status, temp_table.mail FROM temp_table LEFT JOIN customers ON temp_table.fk_customer = customers.customer_id ORDER BY monthly_value DESC LIMIT $1",
+    "WITH temp_table AS (SELECT deal_id, fk_customer, name, monthly_value, one_off_value, details, contract_duration, status, mail, deals.updated_at FROM deals LEFT JOIN users ON deals.fk_user = users.user_id)SELECT temp_table.deal_id, customers.name, temp_table.monthly_value, temp_table.one_off_value, temp_table.details, temp_table.contract_duration, temp_table.status, temp_table.mail, temp_table.updated_at FROM temp_table LEFT JOIN customers ON temp_table.fk_customer = customers.customer_id ORDER BY monthly_value DESC LIMIT $1",
     [limit],
     (error, results) => {
       if (error) {
@@ -164,7 +177,7 @@ const createDeal = (req, res, next) => {
     contract_duration,
   } = req.body;
   pool.query(
-    "INSERT INTO deals (fk_user, fk_customer, details, monthly_value, one_off_value, contract_duration) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)",
+    "INSERT INTO deals (fk_user, fk_customer, details, monthly_value, one_off_value, contract_duration) VALUES($1, $2, $3, $4, $5, $6)",
     [
       fk_user,
       fk_customer,
@@ -184,12 +197,26 @@ const createDeal = (req, res, next) => {
 const updateDeal = (req, res, nex) => {
   const deal = req.params.deal;
   // const id = req.params.id
-  const { status, details, monthly_value, one_off_value, contract_duration } =
-    req.body;
+  const {
+    status,
+    details,
+    monthly_value,
+    one_off_value,
+    contract_duration,
+    fk_customer
+  } = req.body;
 
   pool.query(
-    "UPDATE deals SET status=$1, details=$2, monthly_value=$3, one_off_value=$4, contract_duration=$5 WHERE deal_id=$6",
-    [status, details, monthly_value, one_off_value, contract_duration, deal],
+    "UPDATE deals SET status=$1, details=$2, monthly_value=$3, one_off_value=$4, contract_duration=$5, fk_customer=$6, updated_at=NOW() WHERE deal_id=$7",
+    [
+      status,
+      details,
+      monthly_value,
+      one_off_value,
+      contract_duration,
+      fk_customer,
+      deal,
+    ],
     (error, results) => {
       if (error) {
         throw error;
@@ -198,6 +225,7 @@ const updateDeal = (req, res, nex) => {
     }
   );
 };
+
 const deleteDeal = (req, res, nex) => {
   const deal = req.params.deal;
 
@@ -208,6 +236,61 @@ const deleteDeal = (req, res, nex) => {
     res.status(200).send(`Deal deleted`);
   });
 };
+
+const getCustomers = (req, res, next) => {
+  pool.query("SELECT * FROM customers", (error, results) => {
+    if (error) {
+      throw error;
+    }
+    res.status(200).json(results.rows);
+  });
+};
+
+const createCustomer = (req, res, nex) => {
+  const { name } = req.body;
+  pool.query(
+    "INSERT INTO customers (name) VALUES ($1)",
+    [name],
+    (error, results) => {
+      if (error) {
+        throw error;
+      }
+      res.status(201).send(`Result added`);
+    }
+  );
+};
+
+
+const updateCustomer = (req, res, nex) => {
+  const customer = req.params.customer;
+  // const id = req.params.id
+  const {
+    name
+  } = req.body;
+
+  pool.query(
+    "UPDATE customers SET name=$1 WHERE customer_id=$2",
+    [name, customer],
+    (error, results) => {
+      if (error) {
+        throw error;
+      }
+      res.status(200).send(`Result modified`);
+    }
+  );
+};
+
+const deleteCustomer = (req, res, nex) => {
+  const customer = req.params.customer;
+
+  pool.query("DELETE FROM customers WHERE customer_id = $1", [customer], (error, results) => {
+    if (error) {
+      throw error;
+    }
+    res.status(200).send(`Customer deleted`);
+  });
+};
+
 
 module.exports = {
   getComments,
@@ -221,7 +304,12 @@ module.exports = {
   getDealsByUser,
   getDealsByCustomer,
   getDealOverview,
+  getDealOverviewWithLimit,
   createDeal,
   updateDeal,
   deleteDeal,
+  getCustomers,
+  createCustomer,
+  updateCustomer,
+  deleteCustomer,
 };

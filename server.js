@@ -3,7 +3,7 @@ const bodyParser = require("body-parser");
 const db = require("./queries");
 var cors = require("cors");
 const app = express();
-const port = 3001;
+const PORT = process.env.PORT || 3001;
 
 app.options("*", cors());
 app.use(function (req, res, next) {
@@ -30,11 +30,21 @@ app.get("/deals", db.getDeals);
 app.get("/deals/id/:deal", db.getDealsById);
 app.get("/deals/users/:user", db.getDealsByUser);
 app.get("/deals/customers/:customer", db.getDealsByCustomer);
-app.get("/deals/overview/:limit", db.getDealOverview);
-app.get("/deals", db.createDeal);
-app.get("/deals/id/:deal", db.updateDeal);
-app.get("/deals/id/:deal", db.deleteDeal);
+app.get("/deals/overview/", db.getDealOverview);
+app.get("/deals/overview/:limit", db.getDealOverviewWithLimit);
+app.post("/deals", db.createDeal);
+app.put("/deals/general/:deal", db.updateDeal);
+app.delete("/deals/id/:deal", db.deleteDeal);
 
-app.listen(port, () => {
-  console.log(`App running on port ${port}.`);
-});
+// CUSTOMERS
+app.get("/customers", db.getCustomers);
+app.post("/customers", db.createCustomer);
+app.put("/customers/:customer", db.updateCustomer);
+app.delete("/customers/:customer", db.deleteCustomer);
+
+
+
+
+  app.listen(PORT, () => console.log(`listening on ${PORT}`));
+
+
