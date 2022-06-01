@@ -20,7 +20,7 @@ INSERT INTO "customers" ("name") VALUES
 ;
 
 INSERT INTO "deals" ("fk_user", "fk_customer", "details", "monthly_value", "one_off_value", "contract_duration") VALUES
-(1, 1, 'cuña dos veces por semana', 300, 0, 6 ),
+(9, 1, 'cuña dos veces por semana', 300, 0, 6 ),
 (1, 2, 'patrocinio show Venciendo Miedos', 300, 0, 12 ),
 (2, 1, 'cuña 3 veces por semana', 300, 0, 1 )
 ;
@@ -31,3 +31,4 @@ INSERT INTO "operations" ("fk_deal","tasks", "completion_status") VALUES
 
 
 COMMIT;
+

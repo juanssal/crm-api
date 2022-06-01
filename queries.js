@@ -1,3 +1,5 @@
+const { append } = require("express/lib/response");
+
 const Pool = require("pg").Pool;
 
 const pool = new Pool({
@@ -112,11 +114,13 @@ const getDealsById = (req, res, next) => {
     }
   );
 };
-// to check
+// I need to expand this, because this is going to become the default getDeal function.
 const getDealsByUser = (req, res, next) => {
   const user = req.params.user;
   pool.query(
-    "SELECT user_id, name, details, monthly_value, one_off_value FROM deals LEFT JOIN users ON deals.fk_user = users.user_id",
+    // "SELECT user_id, name, details, monthly_value, one_off_value FROM deals LEFT JOIN users ON deals.fk_user = users.user_id",
+    // "WITH temp_table AS (SELECT deal_id, fk_customer, name, monthly_value, one_off_value, details, contract_duration, status, mail, fk_user, deals.updated_at FROM deals LEFT JOIN users ON deals.fk_user = users.user_id)SELECT temp_table.deal_id, customers.name, temp_table.monthly_value, temp_table.one_off_value, temp_table.details, temp_table.contract_duration, temp_table.status, temp_table.fk_user, temp_table.mail, temp_table.updated_at FROM temp_table LEFT JOIN customers ON temp_table.fk_customer = customers.customer_id WHERE fk_user =$1 ORDER BY monthly_value DESC LIMIT $2;"
+    "WITH temp_table AS (SELECT deal_id, fk_customer, name, monthly_value, one_off_value, details, contract_duration, status, mail, user_id, deals.updated_at FROM deals LEFT JOIN users ON deals.fk_user = users.user_id)SELECT temp_table.deal_id, customers.name, temp_table.monthly_value, temp_table.one_off_value, temp_table.details, temp_table.contract_duration, temp_table.status, temp_table.user_id, temp_table.mail, temp_table.updated_at FROM temp_table LEFT JOIN customers ON temp_table.fk_customer = customers.customer_id WHERE user_id = $1 ORDER BY monthly_value DESC LIMIT 4",
     [user],
     (error, results) => {
       if (error) {
@@ -130,7 +134,7 @@ const getDealsByUser = (req, res, next) => {
 const getDealsByCustomer = (req, res, nex) => {
   const customer = req.params.customer;
   pool.query(
-    "SELECT customers.name,deals.details, deals.monthly_value, deals.one_off_value FROM deals LEFT JOIN customers ON deals.fk_customer = $1",
+    "SELECT customers.name,deals.details, deals.monthly_value, deals.one_off_value FROM deals LEFT JOIN customers ON customer_id = $1",
     [customer],
     (error, results) => {
       if (error) {
@@ -291,6 +295,17 @@ const deleteCustomer = (req, res, nex) => {
   });
 };
 
+// USERS ROUTES
+
+const getUsers = (req, res, next) => {
+pool.query("SELECT * FROM users", (error, results) => {
+  if(error) {
+    throw error;
+  }
+  res.status(200).json(results.rows);
+})
+}
+
 
 module.exports = {
   getComments,
@@ -312,4 +327,5 @@ module.exports = {
   createCustomer,
   updateCustomer,
   deleteCustomer,
+  getUsers
 };

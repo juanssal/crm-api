@@ -1,6 +1,18 @@
 
 
 
+# INSTALL
+1. Go to Server "ssh something@something.. "
+2. Install postgres
+3. Create database "crm-radios"
+4. Upload tables and seed them with tables in doc directory
+5. Create Folder for project "mkdir crm && cd crm"
+6. Download repository "git clone https://github.com/juanssal/crm-api.git"
+7. Go to crm-api directory and run the app "cd crm-api && node server.js"
+8. Test and if all is Ok then stop the process and run it with pm
+
+# DETAILED EXPLANATION
+
 ## DATA
 We will be using a Postgres Database for this project.
 ## POSTGRES INSTALLATION
@@ -8,7 +20,8 @@ We will be using a Postgres Database for this project.
 ## DATABASE SETUP
 ```
 sudo -i -u postgres
-CREATE USER admin WITH LOGIN ENCRYPTED PASSWORD marconi3!;
+psql
+CREATE USER admin WITH LOGIN ENCRYPTED PASSWORD 'marconi3!';
 CREATE DATABASE crm_radios OWNER admin;
 ```
 

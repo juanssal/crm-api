@@ -42,9 +42,10 @@ app.post("/customers", db.createCustomer);
 app.put("/customers/:customer", db.updateCustomer);
 app.delete("/customers/:customer", db.deleteCustomer);
 
+// USERS
+app.get("/users", db.getUsers);
 
 
-
-  app.listen(PORT, () => console.log(`listening on ${PORT}`));
+app.listen(PORT, () => console.log(`listening on ${PORT}`));
 
 
