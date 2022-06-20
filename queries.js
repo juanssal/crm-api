@@ -305,7 +305,18 @@ pool.query("SELECT * FROM users", (error, results) => {
   res.status(200).json(results.rows);
 })
 }
-
+const updateUser = (req, res, next) => {
+pool.query(
+  "UPDATE users SET password=$1 WHERE user_id=$2",
+  [password, user_id],
+  (error, results) => {
+    if (error) {
+      throw error;
+    }
+    res.status(200).send(`Result modified`);
+  }
+  )
+}
 
 module.exports = {
   getComments,
@@ -327,5 +338,6 @@ module.exports = {
   createCustomer,
   updateCustomer,
   deleteCustomer,
-  getUsers
+  getUsers,
+  updateUser
 };

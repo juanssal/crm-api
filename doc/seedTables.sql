@@ -32,3 +32,5 @@ INSERT INTO "operations" ("fk_deal","tasks", "completion_status") VALUES
 
 COMMIT;
 
+
+UPDATE deals SET status=1, details='modified deal', monthly_value=300, one_off_value=400, contract_duration=5, fk_customer=1, updated_at=NOW() WHERE deal_id=12;
