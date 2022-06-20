@@ -305,8 +305,20 @@ pool.query("SELECT * FROM users", (error, results) => {
   res.status(200).json(results.rows);
 })
 }
+
+const getUserById = (req, res, next) => {
+  const {user_id} = req.params.id;
+  pool.query("SELECT * FROM users WHERE user_id=$1",[user_id], (error, results) => {
+    if(error) {
+      throw error;
+    }
+    res.status(200).json(results.rows);
+  })
+  }
+  
+
 const updateUser = (req, res, next) => {
-  const user_id = req.params.user;
+  const user_id = req.params.id;
   // const id = req.params.id
   const {
     password
@@ -344,5 +356,6 @@ module.exports = {
   updateCustomer,
   deleteCustomer,
   getUsers,
+  getUserById,
   updateUser
 };

@@ -44,6 +44,8 @@ app.delete("/customers/:customer", db.deleteCustomer);
 
 // USERS
 app.get("/users", db.getUsers);
+app.get("/users/:id", db.getUserById)
+
 app.put("/users/:id", db.updateUser)
 
 
