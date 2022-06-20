@@ -307,7 +307,7 @@ pool.query("SELECT * FROM users", (error, results) => {
 }
 
 const getUserById = (req, res, next) => {
-  const {user_id} = req.params.id;
+  const user_id = req.params.id;
   pool.query("SELECT * FROM users WHERE user_id=$1",[user_id], (error, results) => {
     if(error) {
       throw error;
