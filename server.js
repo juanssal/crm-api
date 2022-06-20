@@ -44,6 +44,7 @@ app.delete("/customers/:customer", db.deleteCustomer);
 
 // USERS
 app.get("/users", db.getUsers);
+app.put("/users/:id", db.updateUser)
 
 
 app.listen(PORT, () => console.log(`listening on ${PORT}`));

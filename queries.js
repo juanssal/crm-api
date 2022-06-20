@@ -306,6 +306,11 @@ pool.query("SELECT * FROM users", (error, results) => {
 })
 }
 const updateUser = (req, res, next) => {
+  const user_id = req.params.user;
+  // const id = req.params.id
+  const {
+    password
+  } = req.body;
 pool.query(
   "UPDATE users SET password=$1 WHERE user_id=$2",
   [password, user_id],
