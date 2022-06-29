@@ -20,34 +20,34 @@ app.use(
 );
 
 // COMMENTS
-app.get("/api/comments", db.getComments);
-app.get("/api/comments/deals/:deal", db.getCommentsByDeal);
-app.get("/api/comments/users/:user", db.getCommentsByUser);
-app.post("/api/comments/", db.createComment);
-app.delete("/api/comments/id/:comment", db.deleteComment);
+app.get("/comments", db.getComments);
+app.get("/comments/deals/:deal", db.getCommentsByDeal);
+app.get("/comments/users/:user", db.getCommentsByUser);
+app.post("/comments/", db.createComment);
+app.delete("/comments/id/:comment", db.deleteComment);
 
 //DEALS
-app.get("/api/deals", db.getDeals);
-app.get("/api/deals/id/:deal", db.getDealsById);
-app.get("/api/deals/users/:user", db.getDealsByUser);
-app.get("/api/deals/customers/:customer", db.getDealsByCustomer);
-app.get("/api/deals/overview/", db.getDealOverview);
-app.get("/api/deals/overview/:limit", db.getDealOverviewWithLimit);
-app.post("/api/deals", db.createDeal);
-app.put("/api/deals/general/:deal", db.updateDeal);
-app.delete("/api/deals/id/:deal", db.deleteDeal);
+app.get("/deals", db.getDeals);
+app.get("/deals/id/:deal", db.getDealsById);
+app.get("/deals/users/:user", db.getDealsByUser);
+app.get("/deals/customers/:customer", db.getDealsByCustomer);
+app.get("/deals/overview/", db.getDealOverview);
+app.get("/deals/overview/:limit", db.getDealOverviewWithLimit);
+app.post("/deals", db.createDeal);
+app.put("/deals/general/:deal", db.updateDeal);
+app.delete("/deals/id/:deal", db.deleteDeal);
 
 // CUSTOMERS
-app.get("/api/customers", db.getCustomers);
-app.post("/api/customers", db.createCustomer);
-app.put("/api/customers/:customer", db.updateCustomer);
-app.delete("/api/customers/:customer", db.deleteCustomer);
+app.get("/customers", db.getCustomers);
+app.post("/customers", db.createCustomer);
+app.put("/customers/:customer", db.updateCustomer);
+app.delete("/customers/:customer", db.deleteCustomer);
 
 // USERS
-app.get("/api/users", db.getUsers);
-app.get("/api/users/:id", db.getUserById)
+app.get("/users", db.getUsers);
+app.get("/users/:id", db.getUserById)
 
-app.put("/api/users/:id", db.updateUser)
+app.put("/users/:id", db.updateUser)
 
 
 app.listen(PORT, () => console.log(`listening on ${PORT}`));
