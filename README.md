@@ -33,6 +33,7 @@ Data seed files and info are in doc file
 Example for feeding tables from initialization files in this project:
 ```
 sudo -i -u postgres
+sudo -i -u postgres
 psql -h localhost -U admin -d crm_radios -f "/Users/mac/databases/init.sql"
 ```
 
